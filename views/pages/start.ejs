@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <% include ../common/head %>
+</head>
+
+<body class="container body">
+    <% include ../common/header %>
+    <div class="jumbotron">
+        <form action="/pointing">
+            <div class="form-group">
+                <label for="name">Name (or something you want)</label>
+                <input type="name" class="form-control" id="name" aria-describedby="nameHelp" placeholder="Enter your name">
+                <small id="nameHelp" class="form-text text-muted">The inputed value will be the track for the appointments</small>
+            </div>
+            <button type="submit" class="btn btn-primary" id="start-point">Start pointing</button>
+        </form>
+    </div>
+    <% include ../common/footer %>
+
+    <script>
+        window.addEventListener('load', () => {
+            checkLocalStorage();
+
+            const start = document.getElementById('start-point');
+            attachEventToElement(start, 'click', onSubmitStart);
+        });
+
+        function attachEventToElement(element, event, fn) {
+            if (element.attachEvent) {
+                element.attachEvent(event, fn);
+            } else {
+                element.addEventListener(event, fn);
+            }
+        }
+
+        function removeEventToElement(element, event, fn) {
+            if (element.addEventListener) {
+                element.removeEventListener(event, fn);
+            }
+        }
+
+        function onSubmitStart(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            const value = document.getElementById('name').value;
+            if (value) {
+                localStorage.setItem('storage_name', value);
+                window.location = '/pointing';
+                // Promise GET server.
+            }
+        }
+
+        function checkLocalStorage() {
+            const value = localStorage.getItem('storage_name');
+            if (value) {
+                window.location = '/pointing';
+            }
+        }
+    </script>
+</body>
+
+</html>

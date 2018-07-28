@@ -1,0 +1,23 @@
+{
+  "name": "pointingv2",
+  "version": "1.0.0",
+  "description": "\u0016appointment application",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "capeleto",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^1.18.3",
+    "eslint": "^4.19.1"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "ejs": "^2.6.1",
+    "express": "^4.16.3",
+    "express-ejs-layouts": "^2.4.0",
+    "mysql": "^2.16.0"
+  }
+}

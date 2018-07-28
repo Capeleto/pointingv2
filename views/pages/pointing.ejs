@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <% include ../common/head %>
+</head>
+
+<body class="container body">
+    <% include ../common/header %>
+
+    <div class="container-fluid">
+        <ul id="ul">
+            <li class="li">
+                <div>
+                    <h4>New Task</h4>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Task name</span>
+                        </div>
+                        <input id="task_name-" type="text" class="form-control" placeholder="Task name" aria-label="Task name" >
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Description</span>
+                        </div>
+                        <input id="description-" type="text" class="form-control" placeholder="Description" aria-label="description">
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text">Status</label>
+                        </div>
+                        <select id="select-" class="custom-select">
+                            <option value="Completed">Completed</option>
+                            <option value="Waiting">Waiting</option>
+                            <option value="Canceled">Canceled</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="options">
+                    <a id="save-" class="badge badge-primary size15" href="#" onclick="onSave(this)">Save</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <% include ../common/footer %>
+
+    <script>
+        window.addEventListener('load', () => {
+            addClearStorageToNavigation();
+            
+            loadDataToView();
+            addSaveAction();
+        });
+
+        function attachEventToElement(element, event, fn) {
+            if (element.attachEvent) {
+                element.attachEvent(event, fn);
+            } else {
+                element.addEventListener(event, fn);
+            }
+        }
+
+        function addClearStorageToNavigation() {
+            const navigation = document.getElementById('navigation');
+            navigation.innerHTML += '<a class="nav-link" href="#" id="change-user">Change User</a>';
+
+            const changeUser = document.getElementById('change-user');
+            attachEventToElement(changeUser, 'click', () => {
+                localStorage.clear();
+                window.location = '/';
+            });
+        }
+
+        function addSaveAction() {
+            const saveNew = document.getElementById('save-');
+            attachEventToElement(saveNew.parentNode, 'click', onSave);
+        }
+
+        function loadDataToView() {
+            const name = localStorage.getItem('storage_name');
+
+            fetch(`/pointing/${name}`, {
+                method: 'GET',
+            }).then(response => {
+                if (response.status === 200) {
+                    return response.json();
+                }
+            }).then(buildItens);
+        }
+
+        function onSave(element) {
+            console.log(element);
+            const {id} = element;
+            const splitedId = id.split('-');
+            const databaseId = splitedId[1] ? splitedId[1] : '';
+
+            const description = document.getElementById(`description-${databaseId}`).value;
+            const name = localStorage.getItem('storage_name');
+            const task_name = document.getElementById(`task_name-${databaseId}`).value;
+            const status = document.getElementById(`status-${databaseId}`).value;
+
+            const data = {
+                id: databaseId,
+                description: description,
+                name: name,
+                task_name: task_name,
+                status: status,
+            }
+
+            if (name) {
+                fetch('/pointing', {
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include'
+                }).then(response => {
+                    if (response.status === 200) {
+                        location.reload();
+                    }
+                });
+            }
+        }
+
+        function buildItens(json = []) {
+            json.forEach(element => {
+                const li = `
+                <li class="li">
+                    <div>
+                        <h4 id="element-${element.id}">${element.id}</h4>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Task name</span>
+                            </div>
+                            <input id="task_name-${element.id}" type="text" class="form-control" value="${element.task_name}" placeholder="Task name" aria-label="Task name" >
+                        </div>
+
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Description</span>
+                            </div>
+                            <input id="description-${element.id}"  type="text" class="form-control" value="${element.description}" placeholder="Description" aria-label="Description" >
+                        </div>
+                    
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <label class="input-group-text">Status</label>
+                            </div>
+                            <select id="status-${element.id}" class="custom-select">
+                                <option value="Completed" ${element.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                                <option value="Waiting" ${element.status === 'Waiting' ? 'selected' : ''}>Waiting</option>
+                                <option value="Canceled" ${element.status === 'Canceled' ? 'selected' : ''}>Canceled</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="options">
+                        <a href="#" class="badge badge-primary size15" id="save-${element.id}" onClick="onSave(this)">Save</a>
+                    </div>
+                </li>`;
+                const ul = document.getElementById('ul');
+                ul.innerHTML += li;
+            });
+        }
+
+    </script>
+</body>
+
+</html>
