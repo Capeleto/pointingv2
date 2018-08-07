@@ -6,4 +6,4 @@ CREATE TABLE task (
     status            varchar(80)
 );
 
-INSERT INTO task( VALUES (1, 'name', 'description', 'task_name', 'Completed');
+INSERT INTO task VALUES (1, 'name', 'description', 'task_name', 'Completed');
