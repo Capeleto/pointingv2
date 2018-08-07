@@ -5,3 +5,5 @@ CREATE TABLE task (
     task_name		  varchar(255),
     status            varchar(80)
 );
+
+INSERT INTO task( VALUES (1, 'name', 'description', 'task_name', 'Completed');
